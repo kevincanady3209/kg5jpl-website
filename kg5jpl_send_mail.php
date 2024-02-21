@@ -21,10 +21,24 @@ If you add a form field, you will need to add it here.
 */
 $email_address = $_REQUEST['email_address'] ;
 $comments = $_REQUEST['comments'] ;
+$captcha=$_REQUEST['g-recaptcha-response'];
 
 $msg = 
 "Email: " . $email_address . "\r\n" . 
 "Comments: " . $comments ;
+
+if(!$captcha){
+        echo '<h2>Please check the the captcha form.</h2>';
+        exit;
+}
+
+
+$response = json_decode(file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=6LfAQnspAAAAAA_Q0M-cU8fgo5nJlJdqqIjwrxtr&response=".$captcha."&remoteip=".$_SERVER['REMOTE_ADDR']), true);
+if($response['success'] == false)
+{
+    echo '<h2>You are spammer!</h2>';
+    exit;
+}
 
 /*
 The following function checks for email injection.
